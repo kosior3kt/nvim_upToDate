@@ -6,10 +6,15 @@ vim.opt.relativenumber = true
 vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
+-- vim.opt.smartindent = true
 
-vim.opt.smartindent = true
+vim.g.rust_recommended_style = 0
+vim.g.java_recommended_style = 0
+vim.g.cpp_recommended_style = 0
+vim.g.c_recommended_style = 0
 
 vim.opt.wrap = false
+vim.opt.mouse = ""
 
 vim.opt.swapfile = false
 vim.opt.backup = false
@@ -27,16 +32,27 @@ vim.opt.isfname:append("@-@")
 
 vim.opt.updatetime = 50
 
-
 vim.wo.wrap = false
 
 vim.opt.cursorline = true
 vim.opt.cursorcolumn = true
+
+vim.opt.conceallevel = 1
 
 -- some deranged shit to make this shit usable
 
 vim.g.python3_host_prog = '/opt/homebrew/bin/python3'
 
 local cpp_macos_includes = "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1"
+local cpp_macos_local_includes = "/usr/local/include"
+local cpp_macos_sdl2_includes = "/opt/homebrew/include/SDL2"
+
+
 vim.opt.path = {'.', '**', '/usr/include'}
-vim.opt.path:append(cpp_macos_includes)
+vim.opt.path:prepend(cpp_macos_local_includes)
+vim.opt.path:prepend(cpp_macos_includes)
+vim.opt.path:prepend(cpp_macos_sdl2_includes)
+
+
+
+

@@ -12,26 +12,34 @@ return
         require('telescope').setup({})
 
         local builtin = require('telescope.builtin')
+        local utils = require('telescope.utils')
 		local action_state = require('telescope.actions.state')
 		local actions = require('telescope.actions')
 
         vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
         vim.keymap.set('n', '<leader>fg', builtin.git_files, {})
-        vim.keymap.set('n', '<leader>fr', builtin.registers, {})
+        vim.keymap.set('n', '<leader>ft', builtin.tags, {})
+        vim.keymap.set('n', '<leader>f\"', builtin.registers, {})
+        vim.keymap.set('n', '<leader>fr', builtin.lsp_references, {})
         vim.keymap.set('n', '<leader>fm', builtin.marks, {})
         vim.keymap.set('n', '<leader>vh', builtin.help_tags, {})
+		vim.keymap.set('n', '<leader>fs', builtin.live_grep, {})
 
         vim.keymap.set('n', '<leader>fw', function()
             local word = vim.fn.expand("<cword>")
             builtin.grep_string({ search = word })
         end)
+        vim.keymap.set('n', '<leader>fat', function()
+			vim.cmd[[normal! viw"+y]]
+            builtin.tags()
+        end)
         vim.keymap.set('n', '<leader>fW', function()
             local word = vim.fn.expand("<cWORD>")
             builtin.grep_string({ search = word })
         end)
-        vim.keymap.set('n', '<leader>fs', function()
-            builtin.grep_string({ search = vim.fn.input("Grep > ") })
-        end)
+        -- vim.keymap.set('n', '<leader>fs', function()
+        --     builtin.grep_string({ search = vim.fn.input("Grep > ") })
+        -- end)
 
 
 
@@ -71,6 +79,13 @@ return
 		end
 
 		vim.keymap.set('n', '<leader>fb', Buffer_searcher, {})
-    end
 
+
+		-- local
+		vim.keymap.set('n', '<leader>lf', function()
+			builtin.find_files({cwd = utils.buffer_dir()})
+		end, {desc = "looks for files relative to current buffer"})
+
+    end
 }
+
