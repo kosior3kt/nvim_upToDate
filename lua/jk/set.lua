@@ -45,13 +45,16 @@ vim.g.python3_host_prog = '/opt/homebrew/bin/python3'
 
 local cpp_macos_includes = "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1"
 local cpp_macos_local_includes = "/usr/local/include"
+local idk_at_this_point = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk/usr/include"
 local cpp_macos_sdl2_includes = "/opt/homebrew/include/SDL2"
+local stm32_headers = "/Users/jk/vendor/stm32/"
 
 
 vim.opt.path = {'.', '**', '/usr/include'}
 vim.opt.path:prepend(cpp_macos_local_includes)
 vim.opt.path:prepend(cpp_macos_includes)
 vim.opt.path:prepend(cpp_macos_sdl2_includes)
+vim.opt.path:prepend(idk_at_this_point)
 
 
 

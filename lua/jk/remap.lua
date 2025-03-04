@@ -14,7 +14,7 @@ vim.keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz", {desc = "Go to next item fr
 vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz", {desc = "Go to previous item from location list"})
 
 
-vim.keymap.set("n", "<leader>:", ":<C-f>", {desc = "Open command menu"})
+vim.keymap.set("n", "g:", ":<C-f>", {desc = "Open command menu"})
 
 vim.keymap.set("n", "<leader>wh", "<C-w>h", {desc = "Go to the window left"})
 vim.keymap.set("n", "<leader>wj", "<C-w>j", {desc = "Go to the window up"})
@@ -38,11 +38,16 @@ vim.keymap.set("n", "<leader>ol", ":ObsidianLink", {desc = "Link selection to no
 vim.keymap.set("n", "<leader>ov", ":ObsidianTOC <CR>", {desc = "TOC of current note"})
 
 vim.keymap.set("v", "gy", "ygv<Esc>", {desc = "copies selection without moving the the cursor"})
+vim.keymap.set("n", "gl", "$", {desc = "$ replacement"})
+vim.keymap.set("n", "gh", "_", {desc = "_ replacement"})
+vim.keymap.set("v", "gl", "$", {desc = "$ replacement"})
+vim.keymap.set("v", "gh", "_", {desc = "_ replacement"})
+
 
 vim.keymap.set("n", "'", "`") -- cmon, this shuold be the deafult behaviour...
 
 local y = true
-vim.keymap.set("n", "<leader>cc", function()
+vim.keymap.set("n", "<leader>sl", function()
 	if y then
 		vim.opt.colorcolumn = "80"
 		y = false
@@ -51,6 +56,8 @@ vim.keymap.set("n", "<leader>cc", function()
 		y = true
 	end
 end, {desc = "toggle colorcolumn"})
+
+vim.keymap.set("n", "<leader>sc", ":TSContextToggle<CR>", {desc = "toggle context"})
 
 
 -- this is ugly, but I dont give a fuck
@@ -88,7 +95,7 @@ vim.api.nvim_create_autocmd("FileType", {
 vim.cmd[[hi EoLSpace ctermbg=238 guibg=#696969]]
 vim.cmd[[match EoLSpace /\s\+$/]]
 trailing_is_set = true
-vim.keymap.set("n", "<leader>cw", function()
+vim.keymap.set("n", "<leader>sw", function()
 	if trailing_is_set == false then
 		vim.cmd[[match EoLSpace /\s\+$/]]
 		trailing_is_set = true;
@@ -188,9 +195,11 @@ local function load_external_paths()
 	print("loaded",counter, "paths")
 end
 
+
 vim.keymap.set("n", "<leader>ll", load_external_paths, {desc = "searches for libs.json files loads path from there to lsp"})
 
 vim.opt.tags:prepend("~/.config/nvim/external_tags")
 
 
-vim.keymap.set("n", "<leader>n", "/jfge;laeghtaewghtgephtagwshtegaw<CR>", { desc="clears search results", silent = true })
+vim.keymap.set("n", "<leader>n", "/jfge;laeghtaewghtgephtagwshtegaw<CR>:nohl<CR>", { desc="clears search results", silent = true })
+

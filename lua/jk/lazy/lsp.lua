@@ -13,6 +13,7 @@ return {
         "j-hui/fidget.nvim",
     },
 
+
     config = function()
         local cmp = require('cmp')
         local cmp_lsp = require("cmp_nvim_lsp")
@@ -25,7 +26,13 @@ return {
         require("fidget").setup({})
         require("mason").setup()
         require("mason-lspconfig").setup({
-            ensure_installed = { "clangd", },
+			opts = {
+				servers = {
+					sourcekit = {
+						cmd = "sourcekit-lsp",
+					},
+				},
+			},
             handlers = {
                 function(server_name) -- default handler (optional)
                     require("lspconfig")[server_name].setup {
