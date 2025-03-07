@@ -204,3 +204,8 @@ vim.opt.tags:prepend("~/.config/nvim/external_tags")
 
 vim.keymap.set("n", "<leader>n", "/jfge;laeghtaewghtgephtagwshtegaw<CR>:nohl<CR>", { desc="clears search results", silent = true })
 
+
+
+-- vim.keymap.set("n", "K", "<cmd>horizontal help <C-r><C-w><CR>", { silent = true })
+
+
