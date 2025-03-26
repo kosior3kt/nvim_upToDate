@@ -67,8 +67,8 @@ return {
                         settings = {
                             pylsp = {
 								plugins = {
-									pyflakes = { enabled = true },
-									pylint = { enabled = true },
+									pyflakes = { enabled = false },
+									pylint = { enabled = false },
 									mccabe = { enabled = true },
 									pycodestyle = { enabled = false },
 								},

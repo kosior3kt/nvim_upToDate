@@ -57,5 +57,3 @@ vim.opt.path:prepend(cpp_macos_sdl2_includes)
 vim.opt.path:prepend(idk_at_this_point)
 
 
-
-

@@ -202,9 +202,9 @@ vim.keymap.set("n", "<leader>ll", load_external_paths, {desc = "searches for lib
 vim.opt.tags:prepend("~/.config/nvim/external_tags")
 
 
-vim.keymap.set("n", "<leader>n", "/jfge;laeghtaewghtgephtagwshtegaw<CR>:nohl<CR>", { desc="clears search results", silent = true })
+vim.keymap.set("n", "<leader>sh", ":nohl<CR>", { desc="clears search results", silent = true })
 
-
+vim.keymap.set("n", "gr", "g<C-]>2<CR><CR>", { desc="jumps to implementation if available", silent = true })
 
 -- vim.keymap.set("n", "K", "<cmd>horizontal help <C-r><C-w><CR>", { silent = true })
 
