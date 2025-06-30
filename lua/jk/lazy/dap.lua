@@ -1,6 +1,7 @@
 return
 {
 		"mfussenegger/nvim-dap",
+		event = "VeryLazy",
 		dependencies = {
 			"rcarriga/nvim-dap-ui",
 			"theHamsta/nvim-dap-virtual-text",
@@ -18,10 +19,10 @@ return
 
 			dap.adapters.codelldb = {
 				type = "server",
-				host = "127.0.0.1",
+				-- host = "127.0.0.1",
 				port = "${port}",
 				executable = {
-					command = "$HOME/.local/share/nvim/mason/bin/codelldb",
+					command = "codelldb",
 					args = { "--port", "${port}" },
 				},
 			}

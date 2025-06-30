@@ -28,6 +28,12 @@ return {
                 -- Instead of true it can also be a list of languages
                 additional_vim_regex_highlighting = { "markdown" },
             },
+
+			 folding = {
+				 enable = true,
+				 disable = { 'python' }, -- Example: disable for other languages
+				 fold_virt_text = true,
+			 },
         })
 
         local treesitter_parser_config = require("nvim-treesitter.parsers").get_parser_configs()

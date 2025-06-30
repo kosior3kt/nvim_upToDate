@@ -1,25 +1,38 @@
-local number_of_files = 0
+-- ~/.config/nvim/lua/jk/local_init.lua
+local M = {}
 
-local function scandir(directory)
-    local t, popen = {}, io.popen
-    local pfile = popen('ls -a "'..directory..'"')
-    for filename in pfile:lines() do
-        number_of_files = number_of_files + 1
-        t[number_of_files] = filename
+function M.init()
+  -- Get the correct base path for your specific structure
+  local base_path = vim.fn.stdpath('config') .. '/lua/jk/local'
+  base_path = vim.fn.substitute(base_path, '\\', '/', 'g')  -- Normalize path
+
+  if vim.fn.isdirectory(base_path) == 0 then
+    vim.notify("Local modules directory not found: " .. base_path, vim.log.levels.WARN)
+    return
+  end
+
+  -- Get all .lua files except init.lua
+  local files = vim.fn.glob(base_path .. '/*.lua', false, true)
+
+  for _, file in ipairs(files) do
+    local module_name = vim.fn.fnamemodify(file, ':t:r')
+    if module_name ~= 'init' then
+      -- Use the correct require path 'jk.local.module_name'
+      local status, err = pcall(function()
+        local mod = require('jk.local.' .. module_name)
+        if type(mod) == 'table' and type(mod.setup) == 'function' then
+          mod.setup()
+        end
+      end)
+
+      if not status then
+        vim.notify(string.format("Failed to load jk.local.%s: %s", module_name, err), vim.log.levels.ERROR)
+      end
     end
-    pfile:close()
-    return t
+  end
 end
 
-local array_of_files = scandir("./local");
+-- Auto-initialize
+M.init()
 
-vim.print(array_of_files[1])
-
--- TODO: take care of this later on
-
--- for i = 1, number_of_files do
--- 	if array_of_files ~= nil then
--- 		require(array_of_files[i])
--- 	end
--- end
-
+return M

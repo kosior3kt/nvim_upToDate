@@ -24,6 +24,7 @@ return
         vim.keymap.set('n', '<leader>fm', builtin.marks, {})
         vim.keymap.set('n', '<leader>vh', builtin.help_tags, {})
 		vim.keymap.set('n', '<leader>fs', builtin.live_grep, {})
+		vim.keymap.set('n', '<leader>fj', builtin.jumplist, {})
 
         vim.keymap.set('n', '<leader>fw', function()
             local word = vim.fn.expand("<cword>")

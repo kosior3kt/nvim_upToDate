@@ -1,5 +1,6 @@
 vim.g.mapleader = " "
-vim.keymap.set("n", "<leader>fv", vim.cmd.Ex, {desc = "open project tree"})
+--vim.keymap.set("n", "<leader>fv", vim.cmd.Ex, {desc = "open project tree"})
+vim.keymap.set("n", "<leader>fv", ":Oil<CR>", {desc = "open project tree in Oil"})
 
 vim.keymap.set("n", "<leader>bn", ":bn<CR>", {desc = "next buffer"})
 vim.keymap.set("n", "<leader>bp", ":bp<CR>", {desc = "previous buffer"})
@@ -8,10 +9,10 @@ vim.keymap.set("n", "<leader>bd", ":bd<CR>", {desc = "close buffer"})
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
 
-vim.keymap.set("n", "<C-k>", "<cmd>cnext<CR>zz", {desc = "Go to the next error"})
-vim.keymap.set("n", "<C-j>", "<cmd>cprev<CR>zz", {desc = "Go to the previous error"})
-vim.keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz", {desc = "Go to next item from location list"})
-vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz", {desc = "Go to previous item from location list"})
+vim.keymap.set("n", "<C-k>", "<cmd>cprev<CR>zz", {desc = "Go to the previoud error"})
+vim.keymap.set("n", "<C-j>", "<cmd>cnext<CR>zz", {desc = "Go to the next error"})
+vim.keymap.set("n", "<leader>k", "<cmd>lprev<CR>zz", {desc = "Go to next item from location list"})
+vim.keymap.set("n", "<leader>j", "<cmd>lnext<CR>zz", {desc = "Go to previous item from location list"})
 
 
 vim.keymap.set("n", "g:", ":<C-f>", {desc = "Open command menu"})
@@ -47,7 +48,8 @@ vim.keymap.set("v", "gh", "_", {desc = "_ replacement"})
 
 vim.keymap.set("n", "'", "`") -- cmon, this shuold be the deafult behaviour...
 
-local y = true
+vim.opt.colorcolumn = "80"
+local y = false
 vim.keymap.set("n", "<leader>sl", function()
 	if y then
 		vim.opt.colorcolumn = "80"
@@ -63,15 +65,39 @@ vim.keymap.set("n", "<leader>sc", ":TSContextToggle<CR>", {desc = "toggle contex
 
 -- this is ugly, but I dont give a fuck
 vim.keymap.set("n", "<leader><leader>", function()
-	local name = vim.fn.expand('%')
-	if name == "/Users/jk/notes/quick_note.md" then
-		vim.cmd[[:w]]
-		vim.cmd[[:bd]]
-	else
-		vim.cmd[[:e /Users/jk/notes/quick_note.md]]
-	end
-end, {desc = "toggle the qnotes buffer"}
-)
+    local current_file = vim.fn.expand('%:p')
+    local notes_path = vim.fn.expand('~/notes/quick_note.md')
+    current_file = vim.fn.resolve(vim.fn.fnamemodify(current_file, ':p'))
+    notes_path = vim.fn.resolve(vim.fn.fnamemodify(notes_path, ':p'))
+	-- make sure it's fucking full path
+    if current_file == notes_path then
+        if vim.bo.modified then
+            vim.cmd('w')
+        end
+        vim.cmd('bd')
+        print("Saved and returned to previous buffer from quick note")
+    else
+        local existing_bufnr = nil
+        for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+            if vim.api.nvim_buf_get_option(buf, 'buflisted') then
+                local buf_path = vim.fn.resolve(vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf), ':p'))
+                if buf_path == notes_path then
+                    existing_bufnr = buf
+                    break
+                end
+            end
+        end
+        if existing_bufnr then
+            vim.cmd('buffer ' .. existing_bufnr)
+        else
+            vim.cmd('edit ' .. notes_path)
+        end
+        print("Switched to quick note from: " .. vim.fn.fnamemodify(current_file, ':~'))
+    end
+end, {desc = "Toggle quick notes buffer"})
+
+
+
 
 -- for now I dont need this since all the usage would be with quickfix anyways
 -- update: now handles both qf and ll
@@ -109,35 +135,33 @@ vim.keymap.set("n", "<leader>sw", function()
 end, {desc = "toggles visibility of trailing whitespaces"}
 )
 
-
-
---- folding in c
-function _G.c_style_fold(lnum)
-    local line = vim.fn.getline(lnum) -- Get the current line text
-
-    if line:match("^/%*") then
-		if line:match("%*/$") then
-			return "="	-- if this is one line comment ignore it
-		else
-			return "a1" -- else start of fold
-		end
-    elseif line:match("%*/$") then
-		return "s1"	--end of fold
-    else
-		return "="  --maintain fold level
-    end
-end
-
--- Set foldmethod and foldexpr in Lua
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "c", "cpp" },
-    callback = function()
-        vim.opt_local.foldmethod = "expr"
-        vim.opt_local.foldexpr = "v:lua._G.c_style_fold(v:lnum)"
-		vim.cmd[[:highlight Folded guibg='#111111' guifg=DarkGreen ]]
-		vim.cmd[[normal! zi]]
-    end,
-})
+-- --- folding in c
+-- function _G.c_style_fold(lnum)
+--     local line = vim.fn.getline(lnum) -- Get the current line text
+--
+--     if line:match("^/%*") then
+-- 		if line:match("%*/$") then
+-- 			return "="	-- if this is one line comment ignore it
+-- 		else
+-- 			return "a1" -- else start of fold
+-- 		end
+--     elseif line:match("%*/$") then
+-- 		return "s1"	--end of fold
+--     else
+-- 		return "="  --maintain fold level
+--     end
+-- end
+--
+-- -- Set foldmethod and foldexpr in Lua
+-- vim.api.nvim_create_autocmd("FileType", {
+--     pattern = { "c", "cpp" },
+--     callback = function()
+--         vim.opt_local.foldmethod = "expr"
+--         vim.opt_local.foldexpr = "v:lua._G.c_style_fold(v:lnum)"
+-- 		vim.cmd[[:highlight Folded guibg='#111111' guifg=DarkGreen ]]
+-- 		vim.cmd[[normal! zi]]
+--     end,
+-- })
 
 -- get to the last edit in file
 vim.api.nvim_create_autocmd('BufReadPost', {
@@ -150,22 +174,28 @@ vim.api.nvim_create_autocmd('BufReadPost', {
 
 -- this one is for populating location list with my garbage
 function _G.search_non_numbered_underscored_words()
-    local bufnr = vim.api.nvim_get_current_buf() -- Get current buffer
-    local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false) -- Get all lines
+    local bufnr = vim.api.nvim_get_current_buf()
+    local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
     local results = {}
 
     for lnum, line in ipairs(lines) do
-        for match_start, match_end in line:gmatch("()__%w+__()") do
-            local before = line:sub(1, match_start - 1)
-
+        local pos = 1
+        while true do
+            local start1, end1 = line:find("__", pos)
+            if not start1 then break end
+            local start2, end2 = line:find("__", end1 + 1)
+            if not start2 then break end
+            local content = line:sub(end1 + 1, start2 - 1)
+            local before = line:sub(1, start1 - 1)
             if not before:match("%d%)%s*$") then
                 table.insert(results, {
                     bufnr = bufnr,
                     lnum = lnum,
-                    col = match_start - 1, -- Column index (0-based)
-                    text = line:sub(match_start, match_end - 1)
+                    col = start1 - 1,
+                    text = "__"..content.."__"
                 })
             end
+            pos = end2 + 1
         end
     end
 
@@ -174,11 +204,40 @@ function _G.search_non_numbered_underscored_words()
         return
     end
 
-    vim.fn.setloclist(0, results, "r") -- Populate the location list
-    vim.cmd("lopen") -- Open the location list
+    vim.fn.setloclist(0, results, "r")
+    vim.cmd("lopen")
 end
 
+
 vim.keymap.set("n", "<leader>gO", _G.search_non_numbered_underscored_words, { noremap = true, silent = true })
+
+function _G.search_sections()
+    local bufnr = vim.api.nvim_get_current_buf()
+    local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+    local results = {}
+
+    for lnum, line in ipairs(lines) do
+        local start, _, section = line:find("/////+%s*(.*)")
+        if start then
+            table.insert(results, {
+                bufnr = bufnr,
+                lnum = lnum,
+                col = start - 1,
+                text = section
+            })
+        end
+    end
+
+    if #results == 0 then
+        print("No matches found!")
+        return
+    end
+
+    vim.fn.setloclist(0, results, "r")
+    vim.cmd("lopen")
+end
+
+vim.keymap.set("n", "<leader>go", _G.search_sections, { noremap = true, silent = true })
 
 local function load_external_paths()
 	local file = io.open("libs.json", "r")
@@ -208,4 +267,40 @@ vim.keymap.set("n", "gr", "g<C-]>2<CR><CR>", { desc="jumps to implementation if 
 
 -- vim.keymap.set("n", "K", "<cmd>horizontal help <C-r><C-w><CR>", { silent = true })
 
+local function remove_trailing_whitespaces()
+  -- 1. Save cursor position
+  local cursor_pos = vim.api.nvim_win_get_cursor(0)
 
+  -- 2. Get all lines
+  local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+  -- 3. Process lines (fixed your accumulation)
+  local cleaned_lines = {}
+  for i, line in ipairs(lines) do
+    cleaned_lines[i] = line:gsub('%s+$', '')
+  end
+
+  -- 4. Create undo chunk (all changes as single operation)
+  vim.api.nvim_buf_set_option(0, 'undolevels', vim.api.nvim_buf_get_option(0, 'undolevels'))
+
+  -- 5. Apply changes atomically
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, cleaned_lines)
+
+  -- 6. Restore cursor (with column clamping)
+  local new_line = math.min(cursor_pos[1], #cleaned_lines)
+  local new_col = math.min(cursor_pos[2], #cleaned_lines[new_line] or 0)
+  vim.api.nvim_win_set_cursor(0, {new_line, new_col})
+end
+
+-- Create a command that shows in undo history
+vim.keymap.set('n', '<leader>st',remove_trailing_whitespaces, {desc = 'remove trailing whitespaces'})
+
+vim.keymap.set("n", "[c", function()
+  require("treesitter-context").go_to_context(vim.v.count1)
+end, { silent = true, desc = "jump to context" })
+
+vim.keymap.set('n', 'zR', function() require('ufo').openAllFolds() end, { desc = 'Open all folds' })
+vim.keymap.set('n', 'zM', function() require('ufo').closeAllFolds() end, { desc = 'Close all folds' })
+vim.keymap.set('n', 'zm', function() require('ufo').closeFoldsWith() end, { desc = 'Close folds recursively' }) -- This is the recursive closer
+vim.keymap.set('n', 'zr', function() require('ufo').openFoldsExceptKinds() end, { desc = 'Open folds incrementally' })
+vim.keymap.set('n', 'zp', function() require('ufo').peekFoldedLinesUnderCursor() end, { desc = 'Peek fold' })

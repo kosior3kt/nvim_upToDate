@@ -56,4 +56,53 @@ vim.opt.path:prepend(cpp_macos_includes)
 vim.opt.path:prepend(cpp_macos_sdl2_includes)
 vim.opt.path:prepend(idk_at_this_point)
 
+vim.opt.tags = {
+  "./tags",
+  "tags",
+  "./.git/tags",
+  vim.fn.expand("~/.local/global_tags") -- Global tags (e.g., for system libraries)
+}
 
+
+-- Add to init.lua
+vim.opt.foldmethod = "expr"
+vim.o.foldenable = true
+vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+vim.opt.foldcolumn = "0"
+vim.o.foldlevel = 99
+vim.opt.foldlevelstart = 99
+
+
+
+-- local vim = vim
+-- local api = vim.api
+-- local M = {}
+--
+-- function M.nvim_create_augroups(definitions)
+--     for group_name, definition in pairs(definitions) do
+--         api.nvim_command('augroup '..group_name)
+--         api.nvim_command('autocmd!')
+--         for _, def in ipairs(definition) do
+--             local command = table.concat(vim.tbl_flatten{'autocmd', def}, ' ')
+--             api.nvim_command(command)
+--         end
+--         api.nvim_command('augroup END')
+--     end
+-- end
+--
+--
+-- local autoCommands = {
+--     -- other autocommands
+--     open_folds = {
+--         {"BufEnter,BufReadPost,FileReadPost", "*", "normal zR"}
+--     }
+-- }
+--
+-- M.nvim_create_augroups(autoCommands)
+
+
+vim.api.nvim_create_autocmd('TextYankPost', {
+    callback = function()
+        vim.highlight.on_yank({higroup = 'IncSearch', timeout = 300})
+    end
+})

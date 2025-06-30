@@ -1,0 +1,99 @@
+return
+{
+		"mfussenegger/nvim-dap",
+		event = "VeryLazy",
+		dependencies = {
+			"rcarriga/nvim-dap-ui",
+			"theHamsta/nvim-dap-virtual-text",
+			"nvim-neotest/nvim-nio",
+			"williamboman/mason.nvim",
+		},
+		config = function()
+
+			local mason_dap = require("mason-nvim-dap")
+			local dap = require("dap")
+			local ui = require("dapui")
+			local dap_virtual_text = require("nvim-dap-virtual-text")
+
+			-- Dap Virtual Text
+			dap_virtual_text.setup()
+
+			mason_dap.setup({
+				ensure_installed = { "cppdbg" },
+				automatic_installation = true,
+				handlers = {
+					function(config)
+						require("mason-nvim-dap").default_setup(config)
+					end,
+				},
+			})
+
+			-- Configurations
+			dap.configurations = {
+				c = {
+					{
+						name = "Launch file",
+						type = "cppdbg",
+						request = "launch",
+						program = function()
+							return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+						end,
+						cwd = "${workspaceFolder}",
+						stopAtEntry = false,
+						MIMode = "lldb",
+						miDebuggerPath = "/usr/bin/lldb",
+					},
+					{
+						name = "Attach to lldbserver :1234",
+						type = "cppdbg",
+						request = "launch",
+						MIMode = "lldb",
+						miDebuggerServerAddress = "localhost:1234",
+						miDebuggerPath = "/usr/bin/lldb",
+						cwd = "${workspaceFolder}",
+						program = function()
+							return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+						end,
+					},
+				},
+			}
+
+			-- Dap UI
+
+			ui.setup()
+
+			vim.fn.sign_define("DapBreakpoint", { text = "B" })
+
+			dap.listeners.before.attach.dapui_config = function()
+				ui.open()
+			end
+			dap.listeners.before.launch.dapui_config = function()
+				ui.open()
+			end
+			dap.listeners.before.event_terminated.dapui_config = function()
+				ui.close()
+			end
+			dap.listeners.before.event_exited.dapui_config = function()
+				ui.close()
+			end
+
+			vim.keymap.set("n", "<space>d?", function()
+				require("dapui").eval(nil, { enter = true })
+			end, {desc = "toggle debug ui"})
+
+			vim.keymap.set("n", "<leader>dc", dap.continue, {desc = "continue"})
+			vim.keymap.set("n", "<leader>ds", dap.step_into, {desc = "step into"})
+			vim.keymap.set("n", "<leader>dn", dap.step_over, {desc = "step over"})
+			vim.keymap.set("n", "<leader>do", dap.step_out, {desc = "step out"})
+			vim.keymap.set("n", "<leader>db", dap.step_back, {desc = "step back"})
+			vim.keymap.set("n", "<leader>dr", dap.restart, {desc = "restart"})
+
+			vim.keymap.set("n", "<leader>dcb", function()
+				local condition		= vim.fn.input("Condition> ")
+				local hit_condition = vim.fn.input("Hit Condition> ")
+				local log_message	= vim.fn.input("Log Message>")
+				dap.toggle_breakpoint(condition, hit_condition, log_message)
+			end, {desc = "conditional breakpoint"})
+
+		end
+}
