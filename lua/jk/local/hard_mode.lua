@@ -3,7 +3,7 @@ local M = {}
 
 local last_key = ''
 local num_of_repetions = 0
-local enabled = true
+local enabled = false
 
 local function check_repeat(key)
   if not enabled then return false end

@@ -60,7 +60,12 @@ vim.keymap.set("n", "<leader>sl", function()
 	end
 end, {desc = "toggle colorcolumn"})
 
-vim.keymap.set("n", "<leader>sc", ":TSContextToggle<CR>", {desc = "toggle context"})
+-- vim.keymap.set("n", "<leader>sc", ":TSContext<CR>3<CR>", {desc = "toggle context"})
+vim.keymap.set("n", "<leader>sc",
+function()
+      require("treesitter-context").toggle()
+    end
+, {desc = "toggle context"})
 
 
 -- this is ugly, but I dont give a fuck

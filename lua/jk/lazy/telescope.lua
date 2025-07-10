@@ -8,28 +8,50 @@ return
         "nvim-lua/plenary.nvim"
     },
 
-    config = function()
-        require('telescope').setup({})
+	config = function()
+
+		require('telescope').setup({
+
+			defaults = {
+				-- layout_strategy = 'vertical', -- or 'horizontal' (but 'vertical' gives more space)
+				layout_config = {
+					vertical = {
+						width = 0.95,        -- Use 95% of the screen width
+						height = 0.95,        -- Use 95% of the screen height
+						preview_height = 0.7, -- Preview takes 70% of Telescope's height
+						prompt_position = "top", -- Optional: keeps input at the top
+						preview_cutoff = 1,   -- Never hide preview
+					},
+					horizontal = {          -- Alternative if you prefer horizontal
+						width = 0.95,
+						height = 0.95,
+						preview_width = 0.7,  -- Preview takes 70% of Telescope's width
+						preview_cutoff = 1,   -- Never hide preview (0 = disable, 1 = always show)
+					},
+				},
+			},
+		})
 
         local builtin = require('telescope.builtin')
         local utils = require('telescope.utils')
 		local action_state = require('telescope.actions.state')
 		local actions = require('telescope.actions')
 
-        vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
-        vim.keymap.set('n', '<leader>fg', builtin.git_files, {})
-        vim.keymap.set('n', '<leader>ft', builtin.tags, {})
-        vim.keymap.set('n', '<leader>f\"', builtin.registers, {})
-        vim.keymap.set('n', '<leader>fr', builtin.lsp_references, {})
-        vim.keymap.set('n', '<leader>fm', builtin.marks, {})
-        vim.keymap.set('n', '<leader>vh', builtin.help_tags, {})
-		vim.keymap.set('n', '<leader>fs', builtin.live_grep, {})
-		vim.keymap.set('n', '<leader>fj', builtin.jumplist, {})
+        vim.keymap.set('n', '<leader>ff', builtin.find_files, {desc = "open file picker"})
+        vim.keymap.set('n', '<leader>fg', builtin.git_files, {desc = "open git files"})
+        vim.keymap.set('n', '<leader>ft', builtin.tags, {desc = "open tag list"})
+        vim.keymap.set('n', '<leader>f\"', builtin.registers, {desc = "open register list"})
+        vim.keymap.set('n', '<leader>fr', builtin.lsp_references, {desc = "open lsp references"})
+        vim.keymap.set('n', '<leader>fm', builtin.marks, {desc = "open mark list"})
+        vim.keymap.set('n', '<leader>vh', builtin.help_tags, {desc = "open help tags"})
+		vim.keymap.set('n', '<leader>fs', builtin.live_grep, {desc = "grep"})
+		vim.keymap.set('n', '<leader>fj', builtin.jumplist, {desc = "open jumplist"})
 
         vim.keymap.set('n', '<leader>fw', function()
             local word = vim.fn.expand("<cword>")
             builtin.grep_string({ search = word })
-        end)
+        end, {desc = "grep same word"})
+
         vim.keymap.set('n', '<leader>fat', function()
 			vim.cmd[[normal! viw"+y]]
             builtin.tags()
@@ -37,7 +59,7 @@ return
         vim.keymap.set('n', '<leader>fW', function()
             local word = vim.fn.expand("<cWORD>")
             builtin.grep_string({ search = word })
-        end)
+        end, {desc = "grep same word"})
         -- vim.keymap.set('n', '<leader>fs', function()
         --     builtin.grep_string({ search = vim.fn.input("Grep > ") })
         -- end)
